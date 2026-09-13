@@ -1,0 +1,191 @@
+﻿@model EJPro.Web.Models.OrdemServico
+
+@{
+    ViewData["Title"] = "Nova ordem de serviço";
+}
+
+<div class="row justify-content-center">
+    <div class="col-xl-10">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="h3 mb-1">Nova ordem de serviço</h1>
+
+                <p class="text-muted mb-4">
+                    Registre a entrada do veículo e os dados iniciais do atendimento.
+                </p>
+
+                <form asp-action="Create">
+                    <div asp-validation-summary="All"
+                         class="alert alert-danger">
+                    </div>
+
+                    <h2 class="h5 mb-3">Veículo e entrada</h2>
+
+                    <div class="mb-3">
+                        <label asp-for="VeiculoId" class="form-label"></label>
+
+                        <select asp-for="VeiculoId"
+                                asp-items="ViewBag.VeiculoId"
+                                class="form-select">
+                            <option value="">Selecione o veículo</option>
+                        </select>
+
+                        <span asp-validation-for="VeiculoId"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="QuilometragemEntrada"
+                                   class="form-label"></label>
+
+                            <input asp-for="QuilometragemEntrada"
+                                   class="form-control"
+                                   type="number"
+                                   min="0"
+                                   placeholder="Quilometragem atual" />
+
+                            <span asp-validation-for="QuilometragemEntrada"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DataPrevisaoEntrega"
+                                   class="form-label"></label>
+
+                            <input asp-for="DataPrevisaoEntrega"
+                                   class="form-control"
+                                   type="datetime-local" />
+
+                            <span asp-validation-for="DataPrevisaoEntrega"
+                                  class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <hr class="my-4" />
+
+                    <h2 class="h5 mb-3">Atendimento</h2>
+
+                    <div class="mb-3">
+                        <label asp-for="ProblemaRelatado" class="form-label"></label>
+
+                        <textarea asp-for="ProblemaRelatado"
+                                  class="form-control"
+                                  rows="4"
+                                  placeholder="Descreva o problema informado pelo cliente"></textarea>
+
+                        <span asp-validation-for="ProblemaRelatado"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Diagnostico" class="form-label"></label>
+
+                        <textarea asp-for="Diagnostico"
+                                  class="form-control"
+                                  rows="4"
+                                  placeholder="Diagnóstico inicial, se disponível"></textarea>
+
+                        <span asp-validation-for="Diagnostico"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ServicoExecutado" class="form-label"></label>
+
+                        <textarea asp-for="ServicoExecutado"
+                                  class="form-control"
+                                  rows="4"
+                                  placeholder="Serviços realizados ou previstos"></textarea>
+
+                        <span asp-validation-for="ServicoExecutado"
+                              class="text-danger"></span>
+                    </div>
+
+                    <hr class="my-4" />
+
+                    <h2 class="h5 mb-3">Valores</h2>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="ValorMaoDeObra"
+                                   class="form-label"></label>
+
+                            <div class="input-group">
+                                <span class="input-group-text">R$</span>
+                                <input asp-for="ValorMaoDeObra"
+                                       class="form-control"
+                                       inputmode="decimal"
+                                       placeholder="0,00" />
+                            </div>
+
+                            <span asp-validation-for="ValorMaoDeObra"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="ValorPecas" class="form-label"></label>
+
+                            <div class="input-group">
+                                <span class="input-group-text">R$</span>
+                                <input asp-for="ValorPecas"
+                                       class="form-control"
+                                       inputmode="decimal"
+                                       placeholder="0,00" />
+                            </div>
+
+                            <span asp-validation-for="ValorPecas"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Desconto" class="form-label"></label>
+
+                            <div class="input-group">
+                                <span class="input-group-text">R$</span>
+                                <input asp-for="Desconto"
+                                       class="form-control"
+                                       inputmode="decimal"
+                                       placeholder="0,00" />
+                            </div>
+
+                            <span asp-validation-for="Desconto"
+                                  class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Observacoes" class="form-label"></label>
+
+                        <textarea asp-for="Observacoes"
+                                  class="form-control"
+                                  rows="3"
+                                  placeholder="Informações adicionais da ordem de serviço"></textarea>
+
+                        <span asp-validation-for="Observacoes"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            Abrir ordem de serviço
+                        </button>
+
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script src="~/js/validacao-decimal-ptbr.js"></script>
+}
+}

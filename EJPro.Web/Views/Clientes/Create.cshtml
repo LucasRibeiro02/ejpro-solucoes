@@ -1,0 +1,102 @@
+﻿@model EJPro.Web.Models.Cliente
+
+@{
+    ViewData["Title"] = "Novo cliente";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="h3 mb-1">Novo cliente</h1>
+
+                <p class="text-muted mb-4">
+                    Preencha os dados para cadastrar um cliente.
+                </p>
+
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly"
+                         class="alert alert-danger">
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="NomeCompleto" class="form-label"></label>
+                        <input asp-for="NomeCompleto"
+                               class="form-control"
+                               placeholder="Nome completo do cliente"
+                               autocomplete="name" />
+                        <span asp-validation-for="NomeCompleto"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Cpf" class="form-label"></label>
+                        <input asp-for="Cpf"
+                               class="form-control"
+                               placeholder="000.000.000-00"
+                               inputmode="numeric" />
+                        <span asp-validation-for="Cpf"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Telefone" class="form-label"></label>
+                        <input asp-for="Telefone"
+                               class="form-control"
+                               placeholder="(00) 00000-0000"
+                               inputmode="tel"
+                               autocomplete="tel" />
+                        <span asp-validation-for="Telefone"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email"
+                               class="form-control"
+                               placeholder="cliente@exemplo.com"
+                               autocomplete="email" />
+                        <span asp-validation-for="Email"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Endereco" class="form-label"></label>
+                        <input asp-for="Endereco"
+                               class="form-control"
+                               placeholder="Rua, número e complemento"
+                               autocomplete="street-address" />
+                        <span asp-validation-for="Endereco"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Observacoes" class="form-label"></label>
+                        <textarea asp-for="Observacoes"
+                                  class="form-control"
+                                  rows="3"
+                                  placeholder="Informações adicionais sobre o cliente"></textarea>
+                        <span asp-validation-for="Observacoes"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            Cadastrar cliente
+                        </button>
+
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

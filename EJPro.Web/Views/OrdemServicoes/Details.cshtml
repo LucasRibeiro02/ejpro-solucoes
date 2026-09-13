@@ -1,0 +1,196 @@
+﻿@model EJPro.Web.Models.OrdemServico
+
+@{
+    ViewData["Title"] = $"OS #{Model.Id:D5}";
+
+    var statusTexto = Model.Status switch
+    {
+        StatusOrdemServico.Aberta => "Aberta",
+        StatusOrdemServico.EmDiagnostico => "Em diagnóstico",
+        StatusOrdemServico.AguardandoAprovacao => "Aguardando aprovação",
+        StatusOrdemServico.EmExecucao => "Em execução",
+        StatusOrdemServico.Finalizada => "Finalizada",
+        StatusOrdemServico.Entregue => "Entregue",
+        StatusOrdemServico.Cancelada => "Cancelada",
+        _ => Model.Status.ToString()
+    };
+
+    var statusClasse = Model.Status switch
+    {
+        StatusOrdemServico.Aberta => "bg-primary",
+        StatusOrdemServico.EmDiagnostico => "bg-info text-dark",
+        StatusOrdemServico.AguardandoAprovacao => "bg-warning text-dark",
+        StatusOrdemServico.EmExecucao => "bg-secondary",
+        StatusOrdemServico.Finalizada => "bg-success",
+        StatusOrdemServico.Entregue => "bg-dark",
+        StatusOrdemServico.Cancelada => "bg-danger",
+        _ => "bg-secondary"
+    };
+}
+
+<div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+        <h1>Ordem de Serviço #@Model.Id.ToString("D5")</h1>
+        <p class="text-muted mb-0">
+            Aberta em
+            @(Model.DataAbertura.ToLocalTime().ToString("dd/MM/yyyy 'às' HH:mm"))
+        </p>
+    </div>
+
+    <span class="badge fs-6 @statusClasse">
+        @statusTexto
+    </span>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Cliente e veículo</h2>
+
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Cliente</dt>
+                    <dd class="col-sm-8">@Model.Veiculo.Cliente.NomeCompleto</dd>
+
+                    <dt class="col-sm-4">Telefone</dt>
+                    <dd class="col-sm-8">
+                        @(string.IsNullOrWhiteSpace(Model.Veiculo.Cliente.Telefone)
+                            ? "-"
+                            : Model.Veiculo.Cliente.Telefone)
+                    </dd>
+
+                    <dt class="col-sm-4">Placa</dt>
+                    <dd class="col-sm-8">
+                        <strong>@Model.Veiculo.Placa</strong>
+                    </dd>
+
+                    <dt class="col-sm-4">Veículo</dt>
+                    <dd class="col-sm-8">
+                        @Model.Veiculo.Marca @Model.Veiculo.Modelo
+                    </dd>
+
+                    <dt class="col-sm-4">Ano</dt>
+                    <dd class="col-sm-8">
+                        @(Model.Veiculo.Ano?.ToString() ?? "-")
+                    </dd>
+
+                    <dt class="col-sm-4">KM de entrada</dt>
+                    <dd class="col-sm-8">
+                        @(Model.QuilometragemEntrada.HasValue
+                            ? $"{Model.QuilometragemEntrada.Value:N0} km"
+                            : "-")
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Datas</h2>
+
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Abertura</dt>
+                    <dd class="col-sm-7">
+                        @(Model.DataAbertura.ToLocalTime()
+                            .ToString("dd/MM/yyyy HH:mm"))
+                    </dd>
+
+                    <dt class="col-sm-5">Previsão de entrega</dt>
+                    <dd class="col-sm-7">
+                        @(Model.DataPrevisaoEntrega.HasValue
+                            ? Model.DataPrevisaoEntrega.Value.ToLocalTime()
+                            .ToString("dd/MM/yyyy HH:mm")
+                            : "-")
+                    </dd>
+
+                    <dt class="col-sm-5">Conclusão</dt>
+                    <dd class="col-sm-7">
+                        @(Model.DataConclusao.HasValue
+                            ? Model.DataConclusao.Value.ToLocalTime()
+                            .ToString("dd/MM/yyyy HH:mm")
+                            : "-")
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Atendimento</h2>
+
+                <h3 class="h6">Problema relatado</h3>
+                <p class="text-break">@Model.ProblemaRelatado</p>
+
+                <h3 class="h6 mt-4">Diagnóstico</h3>
+                <p class="text-break">
+                    @(string.IsNullOrWhiteSpace(Model.Diagnostico)
+                        ? "Ainda não informado."
+                        : Model.Diagnostico)
+                </p>
+
+                <h3 class="h6 mt-4">Serviço executado</h3>
+                <p class="text-break">
+                    @(string.IsNullOrWhiteSpace(Model.ServicoExecutado)
+                        ? "Ainda não informado."
+                        : Model.ServicoExecutado)
+                </p>
+
+                <h3 class="h6 mt-4">Observações</h3>
+                <p class="text-break mb-0">
+                    @(string.IsNullOrWhiteSpace(Model.Observacoes)
+                        ? "-"
+                        : Model.Observacoes)
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Valores</h2>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <span class="text-muted d-block">Mão de obra</span>
+                        <strong>@Model.ValorMaoDeObra.ToString("C")</strong>
+                    </div>
+
+                    <div class="col-md-3">
+                        <span class="text-muted d-block">Peças</span>
+                        <strong>@Model.ValorPecas.ToString("C")</strong>
+                    </div>
+
+                    <div class="col-md-3">
+                        <span class="text-muted d-block">Desconto</span>
+                        <strong>@Model.Desconto.ToString("C")</strong>
+                    </div>
+
+                    <div class="col-md-3">
+                        <span class="text-muted d-block">Total</span>
+                        <strong class="text-success fs-5">
+                            @Model.ValorTotal.ToString("C")
+                        </strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex gap-2 mt-4">
+    <a asp-action="Edit"
+       asp-route-id="@Model.Id"
+       class="btn btn-primary">
+        Editar ordem
+    </a>
+
+    <a asp-action="Index"
+       class="btn btn-outline-secondary">
+        Voltar para a lista
+    </a>
+</div>

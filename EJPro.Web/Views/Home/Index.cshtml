@@ -1,0 +1,187 @@
+﻿@model EJPro.Web.Models.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Início";
+}
+
+<div class="d-flex flex-column flex-md-row
+            justify-content-between align-items-md-center mb-4">
+    <div>
+        <h1 class="mb-1">E&amp;J PRO Soluções</h1>
+
+        <p class="text-muted mb-0">
+            Gestão de serviços de refrigeração automotiva.
+        </p>
+    </div>
+
+    <a asp-controller="OrdemServicoes"
+       asp-action="Create"
+       class="btn btn-primary mt-3 mt-md-0">
+        Nova ordem de serviço
+    </a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <span class="text-muted">Clientes ativos</span>
+                <div class="fs-2 fw-bold">@Model.TotalClientesAtivos</div>
+
+                <a asp-controller="Clientes"
+                   asp-action="Index"
+                   class="small">
+                    Ver clientes
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <span class="text-muted">Veículos ativos</span>
+                <div class="fs-2 fw-bold">@Model.TotalVeiculosAtivos</div>
+
+                <a asp-controller="Veiculos"
+                   asp-action="Index"
+                   class="small">
+                    Ver veículos
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <span class="text-muted">Ordens em andamento</span>
+                <div class="fs-2 fw-bold">
+                    @Model.TotalOrdensEmAndamento
+                </div>
+
+                <a asp-controller="OrdemServicoes"
+                   asp-action="Index"
+                   class="small">
+                    Ver ordens
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="card shadow-sm h-100 border-primary">
+            <div class="card-body">
+                <span class="text-muted">Valor em andamento</span>
+
+                <div class="fs-2 fw-bold text-primary">
+                    @Model.ValorOrdensEmAndamento.ToString("C")
+                </div>
+
+                <span class="small text-muted">
+                    Total estimado
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="d-flex justify-content-between
+                    align-items-center mb-3">
+            <div>
+                <h2 class="h5 mb-1">Ordens recentes</h2>
+                <p class="text-muted small mb-0">
+                    Últimos atendimentos registrados.
+                </p>
+            </div>
+
+            <a asp-controller="OrdemServicoes"
+               asp-action="Index"
+               class="btn btn-sm btn-outline-primary">
+                Ver todas
+            </a>
+        </div>
+
+        @if (!Model.UltimasOrdens.Any())
+        {
+            <div class="alert alert-info mb-0">
+                Nenhuma ordem de serviço cadastrada.
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>OS</th>
+                            <th>Data</th>
+                            <th>Veículo</th>
+                            <th>Cliente</th>
+                            <th>Situação</th>
+                            <th class="text-end">Total</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var ordem in Model.UltimasOrdens)
+                        {
+                            var statusTexto = ordem.Status switch
+                            {
+                                StatusOrdemServico.Aberta => "Aberta",
+                                StatusOrdemServico.EmDiagnostico =>
+                                "Em diagnóstico",
+                                StatusOrdemServico.AguardandoAprovacao =>
+                                "Aguardando aprovação",
+                                StatusOrdemServico.EmExecucao =>
+                                "Em execução",
+                                StatusOrdemServico.Finalizada =>
+                                "Finalizada",
+                                StatusOrdemServico.Entregue =>
+                                "Entregue",
+                                StatusOrdemServico.Cancelada =>
+                                "Cancelada",
+                                _ => ordem.Status.ToString()
+                            };
+
+                            <tr>
+                                <td>
+                                    <a asp-controller="OrdemServicoes"
+                                       asp-action="Details"
+                                       asp-route-id="@ordem.Id">
+                                        #@ordem.Id.ToString("D5")
+                                    </a>
+                                </td>
+
+                                <td>
+                                    @(ordem.DataAbertura.ToLocalTime()
+                                        .ToString("dd/MM/yyyy"))
+                                </td>
+
+                                <td>
+                                    <strong>@ordem.Veiculo.Placa</strong><br />
+                                    <small class="text-muted">
+                                        @ordem.Veiculo.Marca
+                                        @ordem.Veiculo.Modelo
+                                    </small>
+                                </td>
+
+                                <td>
+                                    @ordem.Veiculo.Cliente.NomeCompleto
+                                </td>
+
+                                <td>@statusTexto</td>
+
+                                <td class="text-end fw-semibold">
+                                    @ordem.ValorTotal.ToString("C")
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

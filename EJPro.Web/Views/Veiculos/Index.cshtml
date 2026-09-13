@@ -1,0 +1,87 @@
+﻿@model IEnumerable<EJPro.Web.Models.Veiculo>
+
+@{
+    ViewData["Title"] = "Veículos";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>Veículos</h1>
+        <p class="text-muted mb-0">
+            Consulte os veículos cadastrados na oficina.
+        </p>
+    </div>
+
+    <a asp-action="Create" class="btn btn-primary">
+        Novo veículo
+    </a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        Nenhum veículo cadastrado.
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Placa</th>
+                    <th>Veículo</th>
+                    <th>Proprietário</th>
+                    <th>Ano</th>
+                    <th>Quilometragem</th>
+                    <th class="text-end">Ações</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var veiculo in Model)
+                {
+                    <tr>
+                        <td>
+                            <strong>@veiculo.Placa</strong>
+                        </td>
+
+                        <td>@veiculo.Marca @veiculo.Modelo</td>
+
+                        <td>@veiculo.Cliente.NomeCompleto</td>
+
+                        <td>
+                            @(veiculo.Ano?.ToString() ?? "-")
+                        </td>
+
+                        <td>
+                            @(veiculo.Quilometragem.HasValue
+                                ? $"{veiculo.Quilometragem.Value:N0} km"
+                                : "-")
+                        </td>
+
+                        <td class="text-end">
+                            <a asp-action="Details"
+                               asp-route-id="@veiculo.Id"
+                               class="btn btn-sm btn-outline-secondary">
+                                Detalhes
+                            </a>
+
+                            <a asp-action="Edit"
+                               asp-route-id="@veiculo.Id"
+                               class="btn btn-sm btn-outline-primary">
+                                Editar
+                            </a>
+
+                            <a asp-action="Delete"
+                               asp-route-id="@veiculo.Id"
+                               class="btn btn-sm btn-outline-danger">
+                                Desativar
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

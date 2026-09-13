@@ -1,0 +1,115 @@
+﻿@model IEnumerable<EJPro.Web.Models.OrdemServico>
+
+@{
+    ViewData["Title"] = "Ordens de serviço";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>Ordens de serviço</h1>
+        <p class="text-muted mb-0">
+            Acompanhe os atendimentos registrados na oficina.
+        </p>
+    </div>
+
+    <a asp-action="Create" class="btn btn-primary">
+        Nova ordem de serviço
+    </a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        Nenhuma ordem de serviço cadastrada.
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>OS</th>
+                    <th>Abertura</th>
+                    <th>Veículo</th>
+                    <th>Cliente</th>
+                    <th>Situação</th>
+                    <th>Total</th>
+                    <th class="text-end">Ações</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var ordem in Model)
+                {
+                    var statusTexto = ordem.Status switch
+                    {
+                        StatusOrdemServico.Aberta => "Aberta",
+                        StatusOrdemServico.EmDiagnostico => "Em diagnóstico",
+                        StatusOrdemServico.AguardandoAprovacao => "Aguardando aprovação",
+                        StatusOrdemServico.EmExecucao => "Em execução",
+                        StatusOrdemServico.Finalizada => "Finalizada",
+                        StatusOrdemServico.Entregue => "Entregue",
+                        StatusOrdemServico.Cancelada => "Cancelada",
+                        _ => ordem.Status.ToString()
+                    };
+
+                    var statusClasse = ordem.Status switch
+                    {
+                        StatusOrdemServico.Aberta => "bg-primary",
+                        StatusOrdemServico.EmDiagnostico => "bg-info text-dark",
+                        StatusOrdemServico.AguardandoAprovacao => "bg-warning text-dark",
+                        StatusOrdemServico.EmExecucao => "bg-secondary",
+                        StatusOrdemServico.Finalizada => "bg-success",
+                        StatusOrdemServico.Entregue => "bg-dark",
+                        StatusOrdemServico.Cancelada => "bg-danger",
+                        _ => "bg-secondary"
+                    };
+
+                    <tr>
+                        <td>
+                            <strong>#@ordem.Id.ToString("D5")</strong>
+                        </td>
+
+                        <td>
+                            @(ordem.DataAbertura.ToLocalTime().ToString("dd/MM/yyyy HH:mm"))
+                        </td>
+
+                        <td>
+                            <strong>@ordem.Veiculo.Placa</strong><br />
+                            <small class="text-muted">
+                                @ordem.Veiculo.Marca @ordem.Veiculo.Modelo
+                            </small>
+                        </td>
+
+                        <td>@ordem.Veiculo.Cliente.NomeCompleto</td>
+
+                        <td>
+                            <span class="badge @statusClasse">
+                                @statusTexto
+                            </span>
+                        </td>
+
+                        <td>
+                            @ordem.ValorTotal.ToString("C")
+                        </td>
+
+                        <td class="text-end">
+                            <a asp-action="Details"
+                               asp-route-id="@ordem.Id"
+                               class="btn btn-sm btn-outline-secondary">
+                                Detalhes
+                            </a>
+
+                            <a asp-action="Edit"
+                               asp-route-id="@ordem.Id"
+                               class="btn btn-sm btn-outline-primary">
+                                Editar
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

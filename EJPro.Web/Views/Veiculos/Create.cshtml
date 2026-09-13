@@ -1,0 +1,140 @@
+﻿@model EJPro.Web.Models.Veiculo
+
+@{
+    ViewData["Title"] = "Novo veículo";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="h3 mb-1">Novo veículo</h1>
+
+                <p class="text-muted mb-4">
+                    Cadastre um veículo e vincule-o ao seu proprietário.
+                </p>
+
+                <form asp-action="Create">
+                    <div asp-validation-summary="All"
+                         class="alert alert-danger">
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ClienteId" class="form-label"></label>
+
+                        <select asp-for="ClienteId"
+                                asp-items="ViewBag.ClienteId"
+                                class="form-select">
+                            <option value="">Selecione o cliente</option>
+                        </select>
+
+                        <span asp-validation-for="ClienteId"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Placa" class="form-label"></label>
+                            <input asp-for="Placa"
+                                   class="form-control"
+                                   placeholder="ABC1D23 ou ABC-1234"
+                                   maxlength="8" />
+                            <span asp-validation-for="Placa"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Ano" class="form-label"></label>
+                            <input asp-for="Ano"
+                                   class="form-control"
+                                   type="number"
+                                   min="1900"
+                                   max="2100"
+                                   placeholder="2020" />
+                            <span asp-validation-for="Ano"
+                                  class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Marca" class="form-label"></label>
+                            <input asp-for="Marca"
+                                   class="form-control"
+                                   placeholder="Ex.: Chevrolet" />
+                            <span asp-validation-for="Marca"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Modelo" class="form-label"></label>
+                            <input asp-for="Modelo"
+                                   class="form-control"
+                                   placeholder="Ex.: Vectra GLS" />
+                            <span asp-validation-for="Modelo"
+                                  class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Cor" class="form-label"></label>
+                            <input asp-for="Cor"
+                                   class="form-control"
+                                   placeholder="Ex.: Preto" />
+                            <span asp-validation-for="Cor"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Quilometragem" class="form-label"></label>
+                            <input asp-for="Quilometragem"
+                                   class="form-control"
+                                   type="number"
+                                   min="0"
+                                   placeholder="Quilometragem atual" />
+                            <span asp-validation-for="Quilometragem"
+                                  class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Chassi" class="form-label"></label>
+                        <input asp-for="Chassi"
+                               class="form-control"
+                               maxlength="17"
+                               placeholder="Número do chassi, se necessário" />
+                        <span asp-validation-for="Chassi"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Observacoes" class="form-label"></label>
+                        <textarea asp-for="Observacoes"
+                                  class="form-control"
+                                  rows="3"
+                                  placeholder="Informações adicionais sobre o veículo"></textarea>
+                        <span asp-validation-for="Observacoes"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            Cadastrar veículo
+                        </button>
+
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

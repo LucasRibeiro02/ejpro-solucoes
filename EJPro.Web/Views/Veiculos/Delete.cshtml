@@ -1,0 +1,60 @@
+﻿@model EJPro.Web.Models.Veiculo
+
+@{
+    ViewData["Title"] = "Desativar veículo";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm border-danger">
+            <div class="card-body p-4">
+                <h1 class="h3 text-danger">Desativar veículo</h1>
+
+                <div class="alert alert-warning mt-3">
+                    Tem certeza de que deseja desativar este veículo?
+                </div>
+
+                <p class="text-muted">
+                    O veículo deixará de aparecer na listagem, mas seu histórico
+                    continuará armazenado.
+                </p>
+
+                <dl class="row mt-4">
+                    <dt class="col-sm-4">Placa</dt>
+                    <dd class="col-sm-8">
+                        <strong>@Model.Placa</strong>
+                    </dd>
+
+                    <dt class="col-sm-4">Veículo</dt>
+                    <dd class="col-sm-8">
+                        @Model.Marca @Model.Modelo
+                    </dd>
+
+                    <dt class="col-sm-4">Proprietário</dt>
+                    <dd class="col-sm-8">
+                        @Model.Cliente.NomeCompleto
+                    </dd>
+
+                    <dt class="col-sm-4">Ano</dt>
+                    <dd class="col-sm-8">
+                        @(Model.Ano?.ToString() ?? "-")
+                    </dd>
+                </dl>
+
+                <form asp-action="Delete">
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-danger">
+                            Confirmar desativação
+                        </button>
+
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
