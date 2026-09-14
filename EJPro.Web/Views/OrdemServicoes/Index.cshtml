@@ -2,7 +2,11 @@
 
 @{
     ViewData["Title"] = "Ordens de serviço";
+
     var statusSelecionado = ViewBag.StatusSelecionado?.ToString();
+    var paginaAtual = (int)(ViewBag.PaginaAtual ?? 1);
+    var totalPaginas = (int)(ViewBag.TotalPaginas ?? 0);
+    var totalRegistros = (int)(ViewBag.TotalRegistros ?? 0);
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -182,5 +186,66 @@ else
                 }
             </tbody>
         </table>
+    </div>
+
+    <div class="d-flex flex-column flex-md-row
+            justify-content-between align-items-md-center
+            gap-3 mt-4">
+
+        <span class="text-muted">
+            @totalRegistros
+            @(totalRegistros == 1
+                ? "ordem encontrada"
+                : "ordens encontradas")
+        </span>
+
+        @if (totalPaginas > 1)
+        {
+            <nav aria-label="Navegação das ordens de serviço">
+                <ul class="pagination mb-0">
+                    <li class="page-item
+                           @(paginaAtual == 1 ? "disabled" : "")">
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-pagina="@(paginaAtual - 1)"
+                           asp-route-pesquisa="@ViewBag.Pesquisa"
+                           asp-route-status="@statusSelecionado">
+                            Anterior
+                        </a>
+                    </li>
+
+                    @for (var numeroPagina = 1;
+                   numeroPagina <= totalPaginas;
+                   numeroPagina++)
+                    {
+                        <li class="page-item
+                               @(numeroPagina == paginaAtual
+                                   ? "active"
+                                   : "")">
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-route-pagina="@numeroPagina"
+                               asp-route-pesquisa="@ViewBag.Pesquisa"
+                               asp-route-status="@statusSelecionado">
+                                @numeroPagina
+                            </a>
+                        </li>
+                    }
+
+                    <li class="page-item
+                           @(paginaAtual == totalPaginas
+                               ? "disabled"
+                               : "")">
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-pagina="@(paginaAtual + 1)"
+                           asp-route-pesquisa="@ViewBag.Pesquisa"
+                           asp-route-status="@statusSelecionado">
+                            Próxima
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        }
     </div>
 }

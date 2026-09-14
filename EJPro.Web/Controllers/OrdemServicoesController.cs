@@ -22,7 +22,8 @@ namespace EJPro.Web.Controllers
         // GET: OrdemServicoes
         public async Task<IActionResult> Index(
             string? pesquisa,
-            StatusOrdemServico? status)
+            StatusOrdemServico? status,
+            int pagina = 1)
         {
             var consulta = _context.OrdensServico
                 .AsNoTracking()
@@ -79,9 +80,29 @@ namespace EJPro.Web.Controllers
             ViewBag.Pesquisa = pesquisa;
             ViewBag.StatusSelecionado = status;
 
+            const int registrosPorPagina = 10;
+
+            pagina = Math.Max(pagina, 1);
+
+            var totalRegistros = await consulta.CountAsync();
+
+            var totalPaginas = (int)Math.Ceiling(
+                totalRegistros / (double)registrosPorPagina);
+
+            if (totalPaginas > 0 && pagina > totalPaginas)
+            {
+                pagina = totalPaginas;
+            }
+
             var ordens = await consulta
                 .OrderByDescending(ordem => ordem.DataAbertura)
+                .Skip((pagina - 1) * registrosPorPagina)
+                .Take(registrosPorPagina)
                 .ToListAsync();
+
+            ViewBag.PaginaAtual = pagina;
+            ViewBag.TotalPaginas = totalPaginas;
+            ViewBag.TotalRegistros = totalRegistros;
 
             return View(ordens);
         }
