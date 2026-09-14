@@ -1,0 +1,397 @@
+﻿@model EJPro.Web.Models.OrdemServico
+
+@{
+    Layout = null;
+
+    var statusTexto = Model.Status switch
+    {
+        StatusOrdemServico.Aberta => "Aberta",
+        StatusOrdemServico.EmDiagnostico => "Em diagnóstico",
+        StatusOrdemServico.AguardandoAprovacao => "Aguardando aprovação",
+        StatusOrdemServico.EmExecucao => "Em execução",
+        StatusOrdemServico.Finalizada => "Finalizada",
+        StatusOrdemServico.Entregue => "Entregue",
+        StatusOrdemServico.Cancelada => "Cancelada",
+        _ => Model.Status.ToString()
+    };
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <title>OS #@Model.Id.ToString("D5") - E&amp;J PRO</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: #222;
+            background: #f1f1f1;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 13px;
+        }
+
+        .documento {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 20px auto;
+            padding: 14mm;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .cabecalho {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 3px solid #222;
+            padding-bottom: 14px;
+            margin-bottom: 18px;
+        }
+
+        .empresa h1 {
+            margin: 0 0 4px;
+            font-size: 25px;
+        }
+
+        .empresa p {
+            margin: 0;
+            color: #555;
+        }
+
+        .empresa {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-impressao {
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .cabecalho {
+            border-bottom-color: #0878b8;
+        }
+
+        .secao h2 {
+            background: #075985;
+        }
+
+        .numero-os {
+            text-align: right;
+        }
+
+        .numero-os strong {
+            display: block;
+            font-size: 22px;
+        }
+
+        .secao {
+            margin-top: 20px;
+        }
+
+        .secao h2 {
+            margin: 0 0 10px;
+            padding: 7px 9px;
+            color: white;
+            background: #333;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .grade {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 24px;
+        }
+
+        .campo {
+            margin-bottom: 7px;
+        }
+
+        .campo strong {
+            display: block;
+            margin-bottom: 2px;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        .texto {
+            min-height: 55px;
+            padding: 9px;
+            white-space: pre-wrap;
+            border: 1px solid #bbb;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            border: 1px solid #aaa;
+        }
+
+        th {
+            text-align: left;
+            background: #eee;
+        }
+
+        .valor {
+            text-align: right;
+        }
+
+        .total {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .assinaturas {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            margin-top: 65px;
+        }
+
+        .assinatura {
+            padding-top: 7px;
+            text-align: center;
+            border-top: 1px solid #222;
+        }
+
+        .acoes {
+            width: 210mm;
+            margin: 20px auto;
+            text-align: right;
+        }
+
+        .acoes button {
+            padding: 11px 18px;
+            color: white;
+            background: #0d6efd;
+            border: 0;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        @@page {
+            size: A4;
+            margin: 0;
+        }
+
+        @@media print {
+            body {
+                background: white;
+            }
+
+            .acoes {
+                display: none;
+            }
+
+            .documento {
+                width: 100%;
+                min-height: auto;
+                margin: 0;
+                padding: 12mm;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="acoes">
+        <button type="button" onclick="window.print()">
+            Imprimir ou salvar como PDF
+        </button>
+    </div>
+
+    <main class="documento">
+        <header class="cabecalho">
+            <div class="empresa">
+                <img src="@Url.Content("~/images/logo-ejpro.png")"
+                     alt="Logo E&amp;J PRO Soluções"
+                     class="logo-impressao" />
+
+                <div>
+                    <h1>E&amp;J PRO SOLUÇÕES</h1>
+                    <p>Refrigeração automotiva</p>
+                </div>
+            </div>
+
+            <div class="numero-os">
+                <span>ORDEM DE SERVIÇO</span>
+                <strong>#@Model.Id.ToString("D5")</strong>
+                <span>@statusTexto</span>
+            </div>
+        </header>
+
+        <section class="secao">
+            <h2>Cliente</h2>
+
+            <div class="grade">
+                <div class="campo">
+                    <strong>Nome</strong>
+                    <span>@Model.Veiculo.Cliente.NomeCompleto</span>
+                </div>
+
+                <div class="campo">
+                    <strong>CPF</strong>
+                    <span>
+                        @(string.IsNullOrWhiteSpace(Model.Veiculo.Cliente.Cpf)
+                            ? "-"
+                            : Model.Veiculo.Cliente.Cpf)
+                    </span>
+                </div>
+
+                <div class="campo">
+                    <strong>Telefone</strong>
+                    <span>
+                        @(string.IsNullOrWhiteSpace(Model.Veiculo.Cliente.Telefone)
+                            ? "-"
+                            : Model.Veiculo.Cliente.Telefone)
+                    </span>
+                </div>
+
+                <div class="campo">
+                    <strong>E-mail</strong>
+                    <span>
+                        @(string.IsNullOrWhiteSpace(Model.Veiculo.Cliente.Email)
+                            ? "-"
+                            : Model.Veiculo.Cliente.Email)
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <section class="secao">
+            <h2>Veículo</h2>
+
+            <div class="grade">
+                <div class="campo">
+                    <strong>Placa</strong>
+                    <span>@Model.Veiculo.Placa</span>
+                </div>
+
+                <div class="campo">
+                    <strong>Marca e modelo</strong>
+                    <span>
+                        @Model.Veiculo.Marca @Model.Veiculo.Modelo
+                    </span>
+                </div>
+
+                <div class="campo">
+                    <strong>Ano e cor</strong>
+                    <span>
+                        @(Model.Veiculo.Ano?.ToString() ?? "-")
+                        /
+                        @(string.IsNullOrWhiteSpace(Model.Veiculo.Cor)
+                            ? "-"
+                            : Model.Veiculo.Cor)
+                    </span>
+                </div>
+
+                <div class="campo">
+                    <strong>Quilometragem de entrada</strong>
+                    <span>
+                        @(Model.QuilometragemEntrada.HasValue
+                            ? $"{Model.QuilometragemEntrada.Value:N0} km"
+                            : "-")
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <section class="secao">
+            <h2>Datas</h2>
+
+            <div class="grade">
+                <div class="campo">
+                    <strong>Abertura</strong>
+                    <span>
+                        @(Model.DataAbertura.ToLocalTime()
+                            .ToString("dd/MM/yyyy HH:mm"))
+                    </span>
+                </div>
+
+                <div class="campo">
+                    <strong>Previsão de entrega</strong>
+                    <span>
+                        @(Model.DataPrevisaoEntrega.HasValue
+                            ? Model.DataPrevisaoEntrega.Value.ToLocalTime()
+                            .ToString("dd/MM/yyyy HH:mm")
+                            : "-")
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <section class="secao">
+            <h2>Atendimento</h2>
+
+            <div class="campo">
+                <strong>Problema relatado</strong>
+                <div class="texto">@Model.ProblemaRelatado</div>
+            </div>
+
+            <div class="campo">
+                <strong>Diagnóstico</strong>
+                <div class="texto">@(Model.Diagnostico ?? "-")</div>
+            </div>
+
+            <div class="campo">
+                <strong>Serviço executado</strong>
+                <div class="texto">@(Model.ServicoExecutado ?? "-")</div>
+            </div>
+        </section>
+
+        <section class="secao">
+            <h2>Valores</h2>
+
+            <table>
+                <tr>
+                    <th>Mão de obra</th>
+                    <td class="valor">@Model.ValorMaoDeObra.ToString("C")</td>
+                </tr>
+                <tr>
+                    <th>Peças</th>
+                    <td class="valor">@Model.ValorPecas.ToString("C")</td>
+                </tr>
+                <tr>
+                    <th>Desconto</th>
+                    <td class="valor">- @Model.Desconto.ToString("C")</td>
+                </tr>
+                <tr class="total">
+                    <th>Total</th>
+                    <td class="valor">@Model.ValorTotal.ToString("C")</td>
+                </tr>
+            </table>
+        </section>
+
+        <section class="secao">
+            <h2>Observações</h2>
+            <div class="texto">@(Model.Observacoes ?? "-")</div>
+        </section>
+
+        <div class="assinaturas">
+            <div class="assinatura">
+                Responsável pela oficina
+            </div>
+
+            <div class="assinatura">
+                Cliente
+            </div>
+        </div>
+    </main>
+</body>
+</html>

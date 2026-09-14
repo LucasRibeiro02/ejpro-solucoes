@@ -1,9 +1,10 @@
-﻿using EJPro.Web.Models;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using EJPro.Web.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace EJPro.Web.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext
     {
         public ApplicationDbContext(
             DbContextOptions<ApplicationDbContext> options)

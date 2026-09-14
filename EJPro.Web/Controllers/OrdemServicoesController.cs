@@ -45,6 +45,29 @@ namespace EJPro.Web.Controllers
                 .Include(ordem => ordem.Veiculo)
                 .ThenInclude(veiculo => veiculo.Cliente)
                 .FirstOrDefaultAsync(ordem => ordem.Id == id);
+
+            if (ordemServico == null)
+            {
+                return NotFound();
+            }
+
+            return View(ordemServico);
+        }
+
+        // GET: OrdemServicoes/Imprimir/5
+        public async Task<IActionResult> Imprimir(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var ordemServico = await _context.OrdensServico
+                .AsNoTracking()
+                .Include(ordem => ordem.Veiculo)
+                .ThenInclude(veiculo => veiculo.Cliente)
+                .FirstOrDefaultAsync(ordem => ordem.Id == id);
+
             if (ordemServico == null)
             {
                 return NotFound();

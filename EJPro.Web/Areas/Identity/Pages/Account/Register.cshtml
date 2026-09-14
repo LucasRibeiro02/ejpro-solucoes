@@ -1,0 +1,23 @@
+﻿@page
+@model EJPro.Web.Areas.Identity.Pages.Account.RegisterModel
+
+@{
+    ViewData["Title"] = "Cadastro indisponível";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="alert alert-warning">
+            <h1 class="h4">Cadastro indisponível</h1>
+
+            <p class="mb-3">
+                A criação pública de usuários está desativada.
+                Solicite um novo acesso ao administrador do sistema.
+            </p>
+
+            <a asp-page="./Login" class="btn btn-primary">
+                Ir para o login
+            </a>
+        </div>
+    </div>
+</div>
