@@ -71,6 +71,14 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 
+using (var escopo = app.Services.CreateScope())
+{
+    var contexto = escopo.ServiceProvider
+        .GetRequiredService<ApplicationDbContext>();
+
+    await contexto.Database.MigrateAsync();
+}
+
 await InicializadorIdentity.InicializarAsync(app.Services);
 
 app.Run();
