@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Ordens de serviço";
+    var statusSelecionado = ViewBag.StatusSelecionado?.ToString();
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -17,14 +18,84 @@
     </a>
 </div>
 
+<form asp-action="Index" method="get" class="row g-2 mb-4">
+    <div class="col-md-5">
+        <label for="pesquisa" class="form-label">
+            Pesquisar
+        </label>
+
+        <input type="text"
+               id="pesquisa"
+               name="pesquisa"
+               value="@ViewBag.Pesquisa"
+               class="form-control"
+               placeholder="Número da OS, cliente, placa, marca ou modelo" />
+    </div>
+
+    <div class="col-md-4">
+        <label for="status" class="form-label">
+            Situação
+        </label>
+
+        <select id="status" name="status" class="form-select">
+            <option value="">Todas as situações</option>
+            <option value="Aberta"
+                    selected="@(statusSelecionado == "Aberta")">
+                Aberta
+            </option>
+            <option value="EmDiagnostico"
+                    selected="@(statusSelecionado == "EmDiagnostico")">
+                Em diagnóstico
+            </option>
+            <option value="AguardandoAprovacao"
+                    selected="@(statusSelecionado == "AguardandoAprovacao")">
+                Aguardando aprovação
+            </option>
+            <option value="EmExecucao"
+                    selected="@(statusSelecionado == "EmExecucao")">
+                Em execução
+            </option>
+            <option value="Finalizada"
+                    selected="@(statusSelecionado == "Finalizada")">
+                Finalizada
+            </option>
+            <option value="Entregue"
+                    selected="@(statusSelecionado == "Entregue")">
+                Entregue
+            </option>
+            <option value="Cancelada"
+                    selected="@(statusSelecionado == "Cancelada")">
+                Cancelada
+            </option>
+        </select>
+    </div>
+
+    <div class="col-md-3 d-flex align-items-end gap-2">
+        <button type="submit" class="btn btn-primary">
+            Filtrar
+        </button>
+
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            Limpar
+        </a>
+    </div>
+</form>
+
 @if (!Model.Any())
 {
-    <div class="alert alert-info">
-        Nenhuma ordem de serviço cadastrada.
+    <div class="alert alert-info mb-4">
+        Nenhuma ordem de serviço foi encontrada com os filtros informados.
     </div>
 }
 else
 {
+    <p class="text-muted mb-3">
+        @Model.Count()
+        @(Model.Count() == 1
+            ? "ordem de serviço encontrada"
+            : "ordens de serviço encontradas")
+    </p>
+
     <div class="table-responsive">
         <table class="table table-striped table-hover align-middle">
             <thead class="table-dark">

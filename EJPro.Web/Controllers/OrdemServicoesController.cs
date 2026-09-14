@@ -20,12 +20,66 @@ namespace EJPro.Web.Controllers
         }
 
         // GET: OrdemServicoes
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(
+            string? pesquisa,
+            StatusOrdemServico? status)
         {
-            var ordens = await _context.OrdensServico
+            var consulta = _context.OrdensServico
                 .AsNoTracking()
                 .Include(ordem => ordem.Veiculo)
                 .ThenInclude(veiculo => veiculo.Cliente)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(pesquisa))
+            {
+                pesquisa = pesquisa.Trim();
+                var termoPesquisa = $"%{pesquisa}%";
+
+                if (int.TryParse(pesquisa, out var numeroOrdem))
+                {
+                    consulta = consulta.Where(ordem =>
+                        ordem.Id == numeroOrdem ||
+                        EF.Functions.ILike(
+                            ordem.Veiculo.Placa,
+                            termoPesquisa) ||
+                        EF.Functions.ILike(
+                            ordem.Veiculo.Marca,
+                            termoPesquisa) ||
+                        EF.Functions.ILike(
+                            ordem.Veiculo.Modelo,
+                            termoPesquisa) ||
+                        EF.Functions.ILike(
+                            ordem.Veiculo.Cliente.NomeCompleto,
+                            termoPesquisa));
+                }
+                else
+                {
+                    consulta = consulta.Where(ordem =>
+                        EF.Functions.ILike(
+                            ordem.Veiculo.Placa,
+                            termoPesquisa) ||
+                        EF.Functions.ILike(
+                            ordem.Veiculo.Marca,
+                            termoPesquisa) ||
+                        EF.Functions.ILike(
+                            ordem.Veiculo.Modelo,
+                            termoPesquisa) ||
+                        EF.Functions.ILike(
+                            ordem.Veiculo.Cliente.NomeCompleto,
+                            termoPesquisa));
+                }
+            }
+
+            if (status.HasValue)
+            {
+                consulta = consulta.Where(ordem =>
+                    ordem.Status == status.Value);
+            }
+
+            ViewBag.Pesquisa = pesquisa;
+            ViewBag.StatusSelecionado = status;
+
+            var ordens = await consulta
                 .OrderByDescending(ordem => ordem.DataAbertura)
                 .ToListAsync();
 
