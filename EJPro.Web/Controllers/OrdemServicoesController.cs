@@ -152,9 +152,10 @@ namespace EJPro.Web.Controllers
         }
 
         // GET: OrdemServicoes/Create
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(int? veiculoId)
         {
-            ViewBag.VeiculoId = await MontarListaVeiculosAsync();
+            ViewBag.VeiculoId =
+                await MontarListaVeiculosAsync(veiculoId);
 
             return View();
         }

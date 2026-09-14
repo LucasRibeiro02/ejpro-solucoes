@@ -11,9 +11,12 @@ namespace EJPro.Web.Models
         [Display(Name = "Nome completo")]
         public string NomeCompleto { get; set; } = string.Empty;
 
-        [StringLength(14)]
-        [Display(Name = "CPF")]
-        public string? Cpf { get; set; }
+        [Required(ErrorMessage = "Informe o CPF ou CNPJ.")]
+        [Display(Name = "CPF/CNPJ")]
+        [RegularExpression(
+            @"^(\d{11}|\d{14})$",
+            ErrorMessage = "Informe um CPF com 11 números ou CNPJ com 14 números.")]
+        public string Cpf { get; set; } = string.Empty;
 
         [StringLength(20)]
         [Display(Name = "Telefone")]

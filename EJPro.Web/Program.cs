@@ -35,7 +35,9 @@ builder.Services
         options.Lockout.MaxFailedAccessAttempts = 5;
         options.Lockout.DefaultLockoutTimeSpan =
             TimeSpan.FromMinutes(15);
+
     })
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddRazorPages();
@@ -68,5 +70,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
+
+await InicializadorIdentity.InicializarAsync(app.Services);
 
 app.Run();

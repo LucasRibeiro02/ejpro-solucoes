@@ -16,7 +16,7 @@
 
     <a asp-controller="OrdemServicoes"
        asp-action="Create"
-       class="btn btn-primary mt-3 mt-md-0">
+       class="btn btn-primary">
         Nova ordem de serviço
     </a>
 </div>
@@ -30,7 +30,7 @@
 
                 <a asp-controller="Clientes"
                    asp-action="Index"
-                   class="small">
+                   class="btn btn-sm btn-outline-primary mt-2">
                     Ver clientes
                 </a>
             </div>
@@ -45,7 +45,7 @@
 
                 <a asp-controller="Veiculos"
                    asp-action="Index"
-                   class="small">
+                   class="btn btn-sm btn-outline-primary mt-2">
                     Ver veículos
                 </a>
             </div>
@@ -62,7 +62,7 @@
 
                 <a asp-controller="OrdemServicoes"
                    asp-action="Index"
-                   class="small">
+                   class="btn btn-sm btn-outline-primary mt-2">
                     Ver ordens
                 </a>
             </div>
@@ -128,29 +128,24 @@
                     <tbody>
                         @foreach (var ordem in Model.UltimasOrdens)
                         {
-                            var statusTexto = ordem.Status switch
+                            var classeSituacao = ordem.Status.ToString() switch
                             {
-                                StatusOrdemServico.Aberta => "Aberta",
-                                StatusOrdemServico.EmDiagnostico =>
-                                "Em diagnóstico",
-                                StatusOrdemServico.AguardandoAprovacao =>
-                                "Aguardando aprovação",
-                                StatusOrdemServico.EmExecucao =>
-                                "Em execução",
-                                StatusOrdemServico.Finalizada =>
-                                "Finalizada",
-                                StatusOrdemServico.Entregue =>
-                                "Entregue",
-                                StatusOrdemServico.Cancelada =>
-                                "Cancelada",
-                                _ => ordem.Status.ToString()
+                                "Aberta" => "bg-primary",
+                                "EmDiagnostico" => "bg-info text-dark",
+                                "AguardandoAprovacao" => "bg-warning text-dark",
+                                "EmExecucao" => "bg-primary",
+                                "Finalizada" => "bg-success",
+                                "Entregue" => "bg-success",
+                                "Cancelada" => "bg-danger",
+                                _ => "bg-secondary"
                             };
 
                             <tr>
                                 <td>
                                     <a asp-controller="OrdemServicoes"
                                        asp-action="Details"
-                                       asp-route-id="@ordem.Id">
+                                       asp-route-id="@ordem.Id"
+                                       class="btn btn-sm btn-outline-primary">
                                         #@ordem.Id.ToString("D5")
                                     </a>
                                 </td>
@@ -172,7 +167,11 @@
                                     @ordem.Veiculo.Cliente.NomeCompleto
                                 </td>
 
-                                <td>@statusTexto</td>
+                                <td>
+                                    <span class="badge rounded-pill @classeSituacao">
+                                        @ordem.Status
+                                    </span>
+                                </td>
 
                                 <td class="text-end fw-semibold">
                                     @ordem.ValorTotal.ToString("C")
