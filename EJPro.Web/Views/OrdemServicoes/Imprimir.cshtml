@@ -3,6 +3,9 @@
 @{
     Layout = null;
 
+    var configuracao = ViewBag.ConfiguracaoOficina
+        as EJPro.Web.Models.ConfiguracaoOficina;
+
     var statusTexto = Model.Status switch
     {
         StatusOrdemServico.Aberta => "Aberta",
@@ -184,6 +187,39 @@
             font-size: 14px;
         }
 
+        .dados-empresa p {
+            margin: 2px 0;
+            font-size: 12px;
+        }
+
+        .pix-box {
+            padding: 12px;
+            border: 2px solid #0878b8;
+            border-radius: 6px;
+            background: #f0f9ff;
+        }
+
+        .pix-grade {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 24px;
+        }
+
+        .pix-chave {
+            font-size: 15px;
+            font-weight: bold;
+            overflow-wrap: anywhere;
+        }
+
+        @@media print {
+            .pix-box
+            ///,.rjwqreatrytdu8
+        {
+            background: white;
+        }
+
+        }
+
         @@page {
             size: A4;
             margin: 0;
@@ -219,13 +255,40 @@
     <main class="documento">
         <header class="cabecalho">
             <div class="empresa">
-                <img src="@Url.Content("~/images/logo-ejpro.png")"
-                     alt="Logo E&amp;J PRO Soluções"
+                <img src="@Url.Content(
+                        configuracao?.LogoUrl ?? "/images/logo-ejpro.png")"
+                     alt="Logo da oficina"
                      class="logo-impressao" />
 
-                <div>
-                    <h1>E&amp;J PRO SOLUÇÕES</h1>
+                <div class="dados-empresa">
+                    <h1>@(configuracao?.NomeOficina ?? "E&J PRO SOLUÇÕES")</h1>
                     <p>Refrigeração automotiva</p>
+
+                    @if (!string.IsNullOrWhiteSpace(configuracao?.Documento))
+                    {
+                        <p>CPF/CNPJ: @configuracao.Documento</p>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(configuracao?.Telefone))
+                    {
+                        <p>Telefone: @configuracao.Telefone</p>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(configuracao?.WhatsApp))
+                    {
+                        <p>WhatsApp: @configuracao.WhatsApp</p>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(configuracao?.Endereco))
+                    {
+                        <p>
+                            @configuracao.Endereco
+                            @if (!string.IsNullOrWhiteSpace(configuracao.Cidade))
+                            {
+                                <span> — @configuracao.Cidade/@configuracao.Estado</span>
+                            }
+                        </p>
+                    }
                 </div>
             </div>
 
@@ -377,6 +440,49 @@
                 </tr>
             </table>
         </section>
+
+        @if (!string.IsNullOrWhiteSpace(configuracao?.ChavePix))
+        {
+            <section class="secao">
+                <h2>Pagamento via PIX</h2>
+
+                <div class="pix-box">
+                    <div class="pix-grade">
+                        <div class="campo">
+                            <strong>Tipo da chave</strong>
+                            <span>
+                                @(string.IsNullOrWhiteSpace(configuracao.TipoChavePix)
+                                    ? "-"
+                                    : configuracao.TipoChavePix)
+                            </span>
+                        </div>
+
+                        <div class="campo">
+                            <strong>Chave PIX</strong>
+                            <span class="pix-chave">@configuracao.ChavePix</span>
+                        </div>
+
+                        <div class="campo">
+                            <strong>Beneficiário</strong>
+                            <span>
+                                @(string.IsNullOrWhiteSpace(configuracao.BeneficiarioPix)
+                                    ? configuracao.NomeOficina
+                                    : configuracao.BeneficiarioPix)
+                            </span>
+                        </div>
+
+                        <div class="campo">
+                            <strong>Cidade</strong>
+                            <span>
+                                @(string.IsNullOrWhiteSpace(configuracao.CidadePix)
+                                    ? configuracao.Cidade
+                                    : configuracao.CidadePix)
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
 
         <section class="secao">
             <h2>Observações</h2>

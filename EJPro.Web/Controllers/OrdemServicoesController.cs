@@ -148,6 +148,10 @@ namespace EJPro.Web.Controllers
                 return NotFound();
             }
 
+            ViewBag.ConfiguracaoOficina = await _context.ConfiguracoesOficina
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
             return View(ordemServico);
         }
 
