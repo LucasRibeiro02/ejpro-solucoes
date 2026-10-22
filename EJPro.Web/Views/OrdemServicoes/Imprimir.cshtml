@@ -6,6 +6,10 @@
     var configuracao = ViewBag.ConfiguracaoOficina
         as EJPro.Web.Models.ConfiguracaoOficina;
 
+    var pixQrCode = ViewBag.PixQrCode as string;
+    var pixCopiaECola = ViewBag.PixCopiaECola as string;
+    var pixErro = ViewBag.PixErro as string;
+
     var statusTexto = Model.Status switch
     {
         StatusOrdemServico.Aberta => "Aberta",
@@ -209,6 +213,64 @@
             font-size: 15px;
             font-weight: bold;
             overflow-wrap: anywhere;
+        }
+
+        .pix-conteudo {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 130px;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .pix-informacoes {
+            min-width: 0;
+        }
+
+        .pix-valor {
+            margin-top: 5px;
+            color: #075985;
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        .pix-qrcode {
+            text-align: center;
+        }
+
+            .pix-qrcode img {
+                display: block;
+                width: 120px;
+                height: 120px;
+                margin: 0 auto 4px;
+            }
+
+            .pix-qrcode span {
+                display: block;
+                color: #555;
+                font-size: 9px;
+            }
+
+        .pix-copia-cola {
+            margin-top: 7px;
+        }
+
+            .pix-copia-cola strong {
+                display: block;
+                margin-bottom: 3px;
+                font-size: 10px;
+                text-transform: uppercase;
+            }
+
+        .pix-codigo {
+            padding: 6px;
+            overflow-wrap: anywhere;
+            color: #444;
+            background: white;
+            border: 1px solid #b7dbea;
+            border-radius: 4px;
+            font-family: Consolas, monospace;
+            font-size: 8px;
+            line-height: 1.2;
         }
 
         @@media print {
@@ -541,38 +603,78 @@
                 <h2>Pagamento via PIX</h2>
 
                 <div class="pix-box">
-                    <div class="pix-grade">
-                        <div class="campo">
-                            <strong>Tipo da chave</strong>
-                            <span>
-                                @(string.IsNullOrWhiteSpace(configuracao.TipoChavePix)
-                                    ? "-"
-                                    : configuracao.TipoChavePix)
-                            </span>
+                    <div class="pix-conteudo">
+                        <div class="pix-informacoes">
+                            <div class="pix-grade">
+                                <div class="campo">
+                                    <strong>Tipo da chave</strong>
+                                    <span>
+                                        @(string.IsNullOrWhiteSpace(
+                                            configuracao.TipoChavePix)
+                                            ? "-"
+                                            : configuracao.TipoChavePix)
+                                    </span>
+                                </div>
+
+                                <div class="campo">
+                                    <strong>Chave PIX</strong>
+                                    <span class="pix-chave">
+                                        @configuracao.ChavePix
+                                    </span>
+                                </div>
+
+                                <div class="campo">
+                                    <strong>Beneficiário</strong>
+                                    <span>
+                                        @(string.IsNullOrWhiteSpace(
+                                            configuracao.BeneficiarioPix)
+                                            ? configuracao.NomeOficina
+                                            : configuracao.BeneficiarioPix)
+                                    </span>
+                                </div>
+
+                                <div class="campo">
+                                    <strong>Valor</strong>
+                                    <span class="pix-valor">
+                                        @Model.ValorTotal.ToString("C")
+                                    </span>
+                                </div>
+                            </div>
+
+                            @if (!string.IsNullOrWhiteSpace(pixCopiaECola))
+                            {
+                                <div class="pix-copia-cola">
+                                    <strong>PIX copia e cola</strong>
+
+                                    <div class="pix-codigo">
+                                        @pixCopiaECola
+                                    </div>
+                                </div>
+                            }
+
+                            @if (!string.IsNullOrWhiteSpace(pixErro))
+                            {
+                                <div class="pix-copia-cola">
+                                    <strong>Não foi possível gerar o QR Code</strong>
+
+                                    <div class="pix-codigo">
+                                        @pixErro
+                                    </div>
+                                </div>
+                            }
                         </div>
 
-                        <div class="campo">
-                            <strong>Chave PIX</strong>
-                            <span class="pix-chave">@configuracao.ChavePix</span>
-                        </div>
+                        @if (!string.IsNullOrWhiteSpace(pixQrCode))
+                        {
+                            <div class="pix-qrcode">
+                                <img src="@pixQrCode"
+                                     alt="QR Code PIX da ordem de serviço" />
 
-                        <div class="campo">
-                            <strong>Beneficiário</strong>
-                            <span>
-                                @(string.IsNullOrWhiteSpace(configuracao.BeneficiarioPix)
-                                    ? configuracao.NomeOficina
-                                    : configuracao.BeneficiarioPix)
-                            </span>
-                        </div>
-
-                        <div class="campo">
-                            <strong>Cidade</strong>
-                            <span>
-                                @(string.IsNullOrWhiteSpace(configuracao.CidadePix)
-                                    ? configuracao.Cidade
-                                    : configuracao.CidadePix)
-                            </span>
-                        </div>
+                                <span>
+                                    Escaneie para pagar esta OS
+                                </span>
+                            </div>
+                        }
                     </div>
                 </div>
             </section>

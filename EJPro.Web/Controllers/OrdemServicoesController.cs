@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EJPro.Web.Data;
 using EJPro.Web.Models;
+using EJPro.Web.Services;
 
 namespace EJPro.Web.Controllers
 {
@@ -148,9 +149,53 @@ namespace EJPro.Web.Controllers
                 return NotFound();
             }
 
-            ViewBag.ConfiguracaoOficina = await _context.ConfiguracoesOficina
-                .AsNoTracking()
-                .FirstOrDefaultAsync();
+            var configuracaoOficina =
+                await _context.ConfiguracoesOficina
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync();
+
+            ViewBag.ConfiguracaoOficina = configuracaoOficina;
+
+            ViewBag.PixQrCode = null;
+            ViewBag.PixCopiaECola = null;
+            ViewBag.PixErro = null;
+
+            var possuiChavePix =
+                configuracaoOficina != null &&
+                !string.IsNullOrWhiteSpace(
+                    configuracaoOficina.ChavePix);
+
+            if (possuiChavePix && ordemServico.ValorTotal > 0)
+            {
+                try
+                {
+                    var beneficiario =
+                        configuracaoOficina!.BeneficiarioPix ??
+                        configuracaoOficina.NomeOficina;
+
+                    var cidade =
+                        configuracaoOficina.CidadePix ??
+                        configuracaoOficina.Cidade ??
+                        "CATANDUVA";
+
+                    var identificador =
+                        $"OS{ordemServico.Id:D5}";
+
+                    var pix = PixService.Gerar(
+                        configuracaoOficina.ChavePix!,
+                        beneficiario,
+                        cidade,
+                        ordemServico.ValorTotal,
+                        identificador);
+
+                    ViewBag.PixQrCode = pix.QrCodeBase64;
+                    ViewBag.PixCopiaECola = pix.CodigoCopiaECola;
+                }
+                catch (ArgumentException excecao)
+                {
+                    ViewBag.PixErro = excecao.Message;
+                }
+            }
 
             return View(ordemServico);
         }
