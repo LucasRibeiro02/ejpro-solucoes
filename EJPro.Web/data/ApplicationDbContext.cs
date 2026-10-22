@@ -18,6 +18,8 @@ namespace EJPro.Web.Data
 
         public DbSet<OrdemServico> OrdensServico { get; set; }
 
+        public DbSet<ConfiguracaoOficina> ConfiguracoesOficina { get; set; } = default!;
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

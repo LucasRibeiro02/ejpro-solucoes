@@ -34,8 +34,8 @@ namespace EJPro.Web.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Cpf")
-                        .HasMaxLength(14)
-                        .HasColumnType("character varying(14)");
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("DataCadastro")
                         .HasColumnType("timestamp with time zone");
@@ -64,6 +64,76 @@ namespace EJPro.Web.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Clientes");
+                });
+
+            modelBuilder.Entity("EJPro.Web.Models.ConfiguracaoOficina", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BeneficiarioPix")
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<string>("Cep")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("ChavePix")
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<string>("Cidade")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("CidadePix")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Documento")
+                        .HasMaxLength(18)
+                        .HasColumnType("character varying(18)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<string>("Endereco")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
+
+                    b.Property<string>("Estado")
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)");
+
+                    b.Property<string>("LogoUrl")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<string>("NomeOficina")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<string>("Telefone")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("TipoChavePix")
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<string>("WhatsApp")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ConfiguracoesOficina");
                 });
 
             modelBuilder.Entity("EJPro.Web.Models.OrdemServico", b =>
