@@ -185,6 +185,14 @@ namespace EJPro.Web.Controllers
                     "Selecione um veículo ativo.");
             }
 
+            if (ordemServico.DataPrevisaoEntrega.HasValue &&
+                ordemServico.DataPrevisaoEntrega.Value.Date < DateTime.Today)
+            {
+                ModelState.AddModelError(
+                    nameof(OrdemServico.DataPrevisaoEntrega),
+                    "A previsão de conclusão não pode ser anterior à data de hoje.");
+            }
+
             if (ModelState.IsValid)
             {
                 if (ordemServico.DataPrevisaoEntrega.HasValue)

@@ -12,13 +12,15 @@ namespace EJPro.Web.Models
         [Display(Name = "Veículo")]
         public int VeiculoId { get; set; }
 
-        [Display(Name = "Data de abertura")]
+        [Display(Name = "Data de abertura da OS")]
         public DateTime DataAbertura { get; set; } = DateTime.UtcNow;
 
-        [Display(Name = "Previsão de entrega")]
+        [Display(Name = "Previsão de conclusão do serviço")]
+        [DataType(DataType.Date)]
         public DateTime? DataPrevisaoEntrega { get; set; }
 
-        [Display(Name = "Data de conclusão")]
+        [Display(Name = "Data de conclusão do serviço")]
+        [DataType(DataType.Date)]
         public DateTime? DataConclusao { get; set; }
 
         [Range(0, 9999999, ErrorMessage = "Informe uma quilometragem válida.")]
