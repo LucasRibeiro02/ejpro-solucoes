@@ -4,11 +4,20 @@
 }
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - EJPro.Web</title>
+    <script>
+        (() => {
+            const temaSalvo = localStorage.getItem("ejpro-tema");
+            const prefereEscuro = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            const temaInicial = temaSalvo ?? (prefereEscuro ? "dark" : "light");
+
+            document.documentElement.setAttribute("data-bs-theme", temaInicial);
+        })();
+    </script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/EJPro.Web.styles.css" asp-append-version="true" />
@@ -87,7 +96,17 @@
                         }
                     </ul>
                         
-                    <partial name="_LoginPartial" />
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button"
+                                id="botaoTema"
+                                class="btn btn-tema"
+                                aria-label="Alternar entre modo claro e escuro"
+                                title="Alterar tema">
+                            <span id="iconeTema" aria-hidden="true">☾</span>
+                        </button>
+
+                        <partial name="_LoginPartial" />
+                    </div>
 
                 </div>
             </div>
@@ -107,6 +126,44 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const botaoTema = document.getElementById("botaoTema");
+            const iconeTema = document.getElementById("iconeTema");
+
+            if (!botaoTema || !iconeTema) {
+                return;
+            }
+
+            function atualizarIcone() {
+                const temaAtual =
+                    document.documentElement.getAttribute("data-bs-theme");
+
+                iconeTema.textContent = temaAtual === "dark" ? "☀" : "☾";
+                botaoTema.title =
+                    temaAtual === "dark"
+                        ? "Ativar modo claro"
+                        : "Ativar modo escuro";
+            }
+
+            botaoTema.addEventListener("click", () => {
+                const temaAtual =
+                    document.documentElement.getAttribute("data-bs-theme");
+
+                const novoTema = temaAtual === "dark" ? "light" : "dark";
+
+                document.documentElement.setAttribute(
+                    "data-bs-theme",
+                    novoTema
+                );
+
+                localStorage.setItem("ejpro-tema", novoTema);
+                atualizarIcone();
+            });
+
+            atualizarIcone();
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
