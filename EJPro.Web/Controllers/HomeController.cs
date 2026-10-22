@@ -25,6 +25,71 @@ namespace EJPro.Web.Controllers
                 StatusOrdemServico.EmExecucao
             };
 
+            var ordensPorStatus = await _context.OrdensServico
+    .AsNoTracking()
+    .GroupBy(ordem => ordem.Status)
+    .Select(grupo => new
+    {
+        Status = grupo.Key,
+        Quantidade = grupo.Count()
+    })
+    .ToDictionaryAsync(
+        item => item.Status.ToString(),
+        item => item.Quantidade
+    );
+
+            var agora = DateTime.UtcNow;
+
+            var inicioPeriodo = new DateTime(
+                agora.Year,
+                agora.Month,
+                1,
+                0,
+                0,
+                0,
+                DateTimeKind.Utc
+            ).AddMonths(-5);
+
+            var ordensFaturadas = await _context.OrdensServico
+                .AsNoTracking()
+                .Where(ordem =>
+                    ordem.DataConclusao.HasValue &&
+                    ordem.DataConclusao.Value >= inicioPeriodo &&
+                    (ordem.Status == StatusOrdemServico.Finalizada ||
+                     ordem.Status == StatusOrdemServico.Entregue))
+                .Select(ordem => new
+                {
+                    Data = ordem.DataConclusao!.Value,
+                    Valor = ordem.ValorMaoDeObra +
+                            ordem.ValorPecas -
+                            ordem.Desconto
+                })
+                .ToListAsync();
+
+            var mesesFaturamento = new List<string>();
+            var valoresFaturamento = new List<decimal>();
+
+            for (var indice = 0; indice < 6; indice++)
+            {
+                var inicioMes = inicioPeriodo.AddMonths(indice);
+                var fimMes = inicioMes.AddMonths(1);
+
+                mesesFaturamento.Add(
+                    inicioMes.ToString(
+                        "MMM/yy",
+                        new System.Globalization.CultureInfo("pt-BR")
+                    )
+                );
+
+                valoresFaturamento.Add(
+                    ordensFaturadas
+                        .Where(ordem =>
+                            ordem.Data >= inicioMes &&
+                            ordem.Data < fimMes)
+                        .Sum(ordem => ordem.Valor)
+                );
+            }
+
             var dashboard = new DashboardViewModel
             {
                 TotalClientesAtivos = await _context.Clientes
@@ -44,6 +109,12 @@ namespace EJPro.Web.Controllers
                         ordem.ValorMaoDeObra +
                         ordem.ValorPecas -
                         ordem.Desconto),
+
+                OrdensPorStatus = ordensPorStatus,
+
+                MesesFaturamento = mesesFaturamento,
+
+                ValoresFaturamento = valoresFaturamento,
 
                 UltimasOrdens = await _context.OrdensServico
                     .AsNoTracking()

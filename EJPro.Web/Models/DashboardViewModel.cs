@@ -10,6 +10,15 @@
 
         public decimal ValorOrdensEmAndamento { get; set; }
 
+        public Dictionary<string, int> OrdensPorStatus { get; set; }
+            = new Dictionary<string, int>();
+
+        public List<string> MesesFaturamento { get; set; }
+            = new List<string>();
+
+        public List<decimal> ValoresFaturamento { get; set; }
+            = new List<decimal>();
+
         public List<OrdemServico> UltimasOrdens { get; set; }
             = new List<OrdemServico>();
     }

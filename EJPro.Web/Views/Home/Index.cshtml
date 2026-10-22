@@ -1,186 +1,415 @@
-﻿@model EJPro.Web.Models.DashboardViewModel
+﻿@using System.Text.Json
+@model EJPro.Web.Models.DashboardViewModel
 
 @{
     ViewData["Title"] = "Início";
 }
+<div class="dashboard-page">
 
-<div class="d-flex flex-column flex-md-row
-            justify-content-between align-items-md-center mb-4">
-    <div>
-        <h1 class="mb-1">E&amp;J PRO Soluções</h1>
+    <div class="d-flex flex-column flex-md-row
+                justify-content-between align-items-md-center mb-4">
+        <div>
+            <h1 class="mb-1">E&amp;J PRO Soluções</h1>
 
-        <p class="text-muted mb-0">
-            Gestão de serviços de refrigeração automotiva.
-        </p>
+            <p class="text-muted mb-0">
+                Gestão de serviços de refrigeração automotiva.
+            </p>
+        </div>
+
+        <a asp-controller="OrdemServicoes"
+           asp-action="Create"
+           class="btn btn-primary">
+            Nova ordem de serviço
+        </a>
     </div>
 
-    <a asp-controller="OrdemServicoes"
-       asp-action="Create"
-       class="btn btn-primary">
-        Nova ordem de serviço
-    </a>
-</div>
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-xl-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <span class="text-muted">Clientes ativos</span>
+                    <div class="fs-2 fw-bold">@Model.TotalClientesAtivos</div>
 
-<div class="row g-3 mb-4">
-    <div class="col-sm-6 col-xl-3">
-        <div class="card shadow-sm h-100">
-            <div class="card-body">
-                <span class="text-muted">Clientes ativos</span>
-                <div class="fs-2 fw-bold">@Model.TotalClientesAtivos</div>
+                    <a asp-controller="Clientes"
+                       asp-action="Index"
+                       class="btn btn-sm btn-outline-primary mt-2">
+                        Ver clientes
+                    </a>
+                </div>
+            </div>
+        </div>
 
-                <a asp-controller="Clientes"
-                   asp-action="Index"
-                   class="btn btn-sm btn-outline-primary mt-2">
-                    Ver clientes
-                </a>
+        <div class="col-sm-6 col-xl-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <span class="text-muted">Veículos ativos</span>
+                    <div class="fs-2 fw-bold">@Model.TotalVeiculosAtivos</div>
+
+                    <a asp-controller="Veiculos"
+                       asp-action="Index"
+                       class="btn btn-sm btn-outline-primary mt-2">
+                        Ver veículos
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <span class="text-muted">Ordens em andamento</span>
+                    <div class="fs-2 fw-bold">
+                        @Model.TotalOrdensEmAndamento
+                    </div>
+
+                    <a asp-controller="OrdemServicoes"
+                       asp-action="Index"
+                       class="btn btn-sm btn-outline-primary mt-2">
+                        Ver ordens
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-3">
+            <div class="card shadow-sm h-100 border-primary">
+                <div class="card-body">
+                    <span class="text-muted">Valor em andamento</span>
+
+                    <div class="fs-2 fw-bold text-primary">
+                        @Model.ValorOrdensEmAndamento.ToString("C")
+                    </div>
+
+                    <span class="small text-muted">
+                        Total estimado
+                    </span>
+                </div>
             </div>
         </div>
     </div>
+    <div class="row g-3 mb-4">
+        <div class="col-lg-5">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h2 class="h5 mb-1">Ordens por situação</h2>
+                        <p class="text-muted small mb-0">
+                            Distribuição atual das ordens de serviço.
+                        </p>
+                    </div>
 
-    <div class="col-sm-6 col-xl-3">
-        <div class="card shadow-sm h-100">
-            <div class="card-body">
-                <span class="text-muted">Veículos ativos</span>
-                <div class="fs-2 fw-bold">@Model.TotalVeiculosAtivos</div>
+                    <div class="position-relative" style="height: 290px;">
+                        <canvas id="graficoStatus"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                <a asp-controller="Veiculos"
-                   asp-action="Index"
-                   class="btn btn-sm btn-outline-primary mt-2">
-                    Ver veículos
-                </a>
+        <div class="col-lg-7">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h2 class="h5 mb-1">Faturamento</h2>
+                        <p class="text-muted small mb-0">
+                            Valores das ordens concluídas nos últimos seis meses.
+                        </p>
+                    </div>
+
+                    <div class="position-relative" style="height: 290px;">
+                        <canvas id="graficoFaturamento"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
-    <div class="col-sm-6 col-xl-3">
-        <div class="card shadow-sm h-100">
-            <div class="card-body">
-                <span class="text-muted">Ordens em andamento</span>
-                <div class="fs-2 fw-bold">
-                    @Model.TotalOrdensEmAndamento
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="d-flex justify-content-between
+                        align-items-center mb-3">
+                <div>
+                    <h2 class="h5 mb-1">Ordens recentes</h2>
+                    <p class="text-muted small mb-0">
+                        Últimos atendimentos registrados.
+                    </p>
                 </div>
 
                 <a asp-controller="OrdemServicoes"
                    asp-action="Index"
-                   class="btn btn-sm btn-outline-primary mt-2">
-                    Ver ordens
+                   class="btn btn-sm btn-outline-primary">
+                    Ver todas
                 </a>
             </div>
-        </div>
-    </div>
 
-    <div class="col-sm-6 col-xl-3">
-        <div class="card shadow-sm h-100 border-primary">
-            <div class="card-body">
-                <span class="text-muted">Valor em andamento</span>
-
-                <div class="fs-2 fw-bold text-primary">
-                    @Model.ValorOrdensEmAndamento.ToString("C")
+            @if (!Model.UltimasOrdens.Any())
+            {
+                <div class="alert alert-info mb-0">
+                    Nenhuma ordem de serviço cadastrada.
                 </div>
-
-                <span class="small text-muted">
-                    Total estimado
-                </span>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="card shadow-sm">
-    <div class="card-body">
-        <div class="d-flex justify-content-between
-                    align-items-center mb-3">
-            <div>
-                <h2 class="h5 mb-1">Ordens recentes</h2>
-                <p class="text-muted small mb-0">
-                    Últimos atendimentos registrados.
-                </p>
-            </div>
-
-            <a asp-controller="OrdemServicoes"
-               asp-action="Index"
-               class="btn btn-sm btn-outline-primary">
-                Ver todas
-            </a>
-        </div>
-
-        @if (!Model.UltimasOrdens.Any())
-        {
-            <div class="alert alert-info mb-0">
-                Nenhuma ordem de serviço cadastrada.
-            </div>
-        }
-        else
-        {
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th>OS</th>
-                            <th>Data</th>
-                            <th>Veículo</th>
-                            <th>Cliente</th>
-                            <th>Situação</th>
-                            <th class="text-end">Total</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        @foreach (var ordem in Model.UltimasOrdens)
-                        {
-                            var classeSituacao = ordem.Status.ToString() switch
-                            {
-                                "Aberta" => "bg-primary",
-                                "EmDiagnostico" => "bg-info text-dark",
-                                "AguardandoAprovacao" => "bg-warning text-dark",
-                                "EmExecucao" => "bg-primary",
-                                "Finalizada" => "bg-success",
-                                "Entregue" => "bg-success",
-                                "Cancelada" => "bg-danger",
-                                _ => "bg-secondary"
-                            };
-
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
                             <tr>
-                                <td>
-                                    <a asp-controller="OrdemServicoes"
-                                       asp-action="Details"
-                                       asp-route-id="@ordem.Id"
-                                       class="btn btn-sm btn-outline-primary">
-                                        #@ordem.Id.ToString("D5")
-                                    </a>
-                                </td>
-
-                                <td>
-                                    @(ordem.DataAbertura.ToLocalTime()
-                                        .ToString("dd/MM/yyyy"))
-                                </td>
-
-                                <td>
-                                    <strong>@ordem.Veiculo.Placa</strong><br />
-                                    <small class="text-muted">
-                                        @ordem.Veiculo.Marca
-                                        @ordem.Veiculo.Modelo
-                                    </small>
-                                </td>
-
-                                <td>
-                                    @ordem.Veiculo.Cliente.NomeCompleto
-                                </td>
-
-                                <td>
-                                    <span class="badge rounded-pill @classeSituacao">
-                                        @ordem.Status
-                                    </span>
-                                </td>
-
-                                <td class="text-end fw-semibold">
-                                    @ordem.ValorTotal.ToString("C")
-                                </td>
+                                <th>OS</th>
+                                <th>Data</th>
+                                <th>Veículo</th>
+                                <th>Cliente</th>
+                                <th>Situação</th>
+                                <th class="text-end">Total</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        }
+                        </thead>
+
+                        <tbody>
+                            @foreach (var ordem in Model.UltimasOrdens)
+                            {
+                                var classeSituacao = ordem.Status.ToString() switch
+                                {
+                                    "Aberta" => "bg-primary",
+                                    "EmDiagnostico" => "bg-info text-dark",
+                                    "AguardandoAprovacao" => "bg-warning text-dark",
+                                    "EmExecucao" => "bg-primary",
+                                    "Finalizada" => "bg-success",
+                                    "Entregue" => "bg-success",
+                                    "Cancelada" => "bg-danger",
+                                    _ => "bg-secondary"
+                                };
+
+                                <tr>
+                                    <td>
+                                        <a asp-controller="OrdemServicoes"
+                                           asp-action="Details"
+                                           asp-route-id="@ordem.Id"
+                                           class="btn btn-sm btn-outline-primary">
+                                            #@ordem.Id.ToString("D5")
+                                        </a>
+                                    </td>
+
+                                    <td>
+                                        @(ordem.DataAbertura.ToLocalTime()
+                                            .ToString("dd/MM/yyyy"))
+                                    </td>
+
+                                    <td>
+                                        <strong>@ordem.Veiculo.Placa</strong><br />
+                                        <small class="text-muted">
+                                            @ordem.Veiculo.Marca
+                                            @ordem.Veiculo.Modelo
+                                        </small>
+                                    </td>
+
+                                    <td>
+                                        @ordem.Veiculo.Cliente.NomeCompleto
+                                    </td>
+
+                                    <td>
+                                        <span class="badge rounded-pill @classeSituacao">
+                                            @ordem.Status
+                                        </span>
+                                    </td>
+
+                                    <td class="text-end fw-semibold">
+                                        @ordem.ValorTotal.ToString("C")
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const nomesStatus =
+        @Html.Raw(JsonSerializer.Serialize(Model.OrdensPorStatus.Keys));
+
+            const quantidadesStatus =
+        @Html.Raw(JsonSerializer.Serialize(Model.OrdensPorStatus.Values));
+
+            const meses =
+        @Html.Raw(JsonSerializer.Serialize(Model.MesesFaturamento));
+
+            const valores =
+        @Html.Raw(JsonSerializer.Serialize(Model.ValoresFaturamento));
+
+            const traducoesStatus = {
+                Aberta: "Aberta",
+                EmDiagnostico: "Em diagnóstico",
+                AguardandoAprovacao: "Aguardando aprovação",
+                EmExecucao: "Em execução",
+                Finalizada: "Finalizada",
+                Entregue: "Entregue",
+                Cancelada: "Cancelada"
+            };
+
+            const rotulosStatus = nomesStatus.map(
+                status => traducoesStatus[status] ?? status
+            );
+
+            const coresStatus = [
+                "#0878b8",
+                "#38bdf8",
+                "#f59e0b",
+                "#6366f1",
+                "#22c55e",
+                "#16a34a",
+                "#ef4444"
+            ];
+
+            function obterCoresTema() {
+                const escuro =
+                    document.documentElement
+                        .getAttribute("data-bs-theme") === "dark";
+
+                return {
+                    texto: escuro ? "#e2e8f0" : "#334155",
+                    grade: escuro
+                        ? "rgba(148, 163, 184, 0.18)"
+                        : "rgba(100, 116, 139, 0.16)"
+                };
+            }
+
+            const coresTema = obterCoresTema();
+
+            const graficoStatus = new Chart(
+                document.getElementById("graficoStatus"),
+                {
+                    type: "doughnut",
+                    data: {
+                        labels: rotulosStatus,
+                        datasets: [{
+                            data: quantidadesStatus,
+                            backgroundColor: coresStatus,
+                            borderWidth: 0,
+                            hoverOffset: 5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: "65%",
+                        plugins: {
+                            legend: {
+                                position: "bottom",
+                                labels: {
+                                    color: coresTema.texto,
+                                    usePointStyle: true,
+                                    padding: 16
+                                }
+                            }
+                        }
+                    }
+                }
+            );
+
+            const graficoFaturamento = new Chart(
+                document.getElementById("graficoFaturamento"),
+                {
+                    type: "line",
+                    data: {
+                        labels: meses,
+                        datasets: [{
+                            label: "Faturamento",
+                            data: valores,
+                            borderColor: "#0878b8",
+                            backgroundColor: "rgba(8, 120, 184, 0.16)",
+                            fill: true,
+                            tension: 0.35,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            intersect: false,
+                            mode: "index"
+                        },
+                        scales: {
+                            x: {
+                                ticks: {
+                                    color: coresTema.texto
+                                },
+                                grid: {
+                                    color: coresTema.grade
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    color: coresTema.texto,
+                                    callback: valor =>
+                                        Number(valor).toLocaleString(
+                                            "pt-BR",
+                                            {
+                                                style: "currency",
+                                                currency: "BRL"
+                                            }
+                                        )
+                                },
+                                grid: {
+                                    color: coresTema.grade
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: contexto =>
+                                        Number(contexto.raw).toLocaleString(
+                                            "pt-BR",
+                                            {
+                                                style: "currency",
+                                                currency: "BRL"
+                                            }
+                                        )
+                                }
+                            }
+                        }
+                    }
+                }
+            );
+
+            const observadorTema = new MutationObserver(() => {
+                const novasCores = obterCoresTema();
+
+                graficoStatus.options.plugins.legend.labels.color =
+                    novasCores.texto;
+
+                graficoFaturamento.options.scales.x.ticks.color =
+                    novasCores.texto;
+
+                graficoFaturamento.options.scales.y.ticks.color =
+                    novasCores.texto;
+
+                graficoFaturamento.options.scales.x.grid.color =
+                    novasCores.grade;
+
+                graficoFaturamento.options.scales.y.grid.color =
+                    novasCores.grade;
+
+                graficoStatus.update();
+                graficoFaturamento.update();
+            });
+
+            observadorTema.observe(
+                document.documentElement,
+                {
+                    attributes: true,
+                    attributeFilter: ["data-bs-theme"]
+                }
+            );
+        });
+    </script>
+}
