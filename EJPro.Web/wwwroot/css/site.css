@@ -1195,3 +1195,33 @@ html[data-bs-theme="dark"] .dashboard-page > .card:last-of-type {
             background-color: rgba(255, 255, 255, 0.08);
         }
 }
+
+/* Botão de impressão da ordem de serviço */
+
+.btn-imprimir-os {
+    color: #334155;
+    background-color: transparent;
+    border: 1px solid #94a3b8;
+}
+
+    .btn-imprimir-os:hover,
+    .btn-imprimir-os:focus {
+        color: #fff;
+        background-color: #475569;
+        border-color: #475569;
+    }
+
+/* Botão de impressão no modo escuro */
+
+[data-bs-theme="dark"] .btn-imprimir-os {
+    color: #e2e8f0;
+    background-color: rgba(255, 255, 255, 0.06);
+    border-color: #64748b;
+}
+
+    [data-bs-theme="dark"] .btn-imprimir-os:hover,
+    [data-bs-theme="dark"] .btn-imprimir-os:focus {
+        color: #fff;
+        background-color: #334155;
+        border-color: #94a3b8;
+    }
