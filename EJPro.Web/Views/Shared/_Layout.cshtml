@@ -1,169 +1,425 @@
 ﻿@{
     var controllerAtual =
         ViewContext.RouteData.Values["controller"]?.ToString();
+
+    var usuarioAutenticado =
+        User.Identity?.IsAuthenticated == true;
 }
 
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - EJPro.Web</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - E&amp;J PRO</title>
+
     <script>
         (() => {
-            const temaSalvo = localStorage.getItem("ejpro-tema");
-            const prefereEscuro = window.matchMedia("(prefers-color-scheme: dark)").matches;
-            const temaInicial = temaSalvo ?? (prefereEscuro ? "dark" : "light");
+            const temaSalvo =
+                localStorage.getItem("ejpro-tema");
 
-            document.documentElement.setAttribute("data-bs-theme", temaInicial);
+            const prefereEscuro =
+                window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+            const temaInicial =
+                temaSalvo ?? (prefereEscuro ? "dark" : "light");
+
+            document.documentElement.setAttribute(
+                "data-bs-theme",
+                temaInicial
+            );
+
+            const estadoSidebar =
+                localStorage.getItem("ejpro-sidebar");
+
+            // Recolhida por padrão
+            if (estadoSidebar !== "expandida") {
+                document.documentElement.classList.add(
+                    "sidebar-recolhida"
+                );
+            }
         })();
     </script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/EJPro.Web.styles.css" asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/EJPro.Web.styles.css"
+          asp-append-version="true" />
 </head>
+
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark navbar-ejpro border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand d-flex align-items-center gap-2"
-                   asp-controller="Home"
-                   asp-action="Index">
-                    <img src="~/images/logo-ejpro.png"
-                         alt="Logo E&amp;J PRO Soluções"
-                         class="logo-navbar" />
-
-                    <span class="fw-semibold">E&amp;J PRO</span>
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+    <header class="topbar-ejpro">
+        <div class="d-flex align-items-center">
+            @if (usuarioAutenticado)
+            {
+                <button type="button"
+                        id="botaoSidebar"
+                        class="botao-sidebar-minimalista"
+                        aria-label="Abrir ou recolher menu"
+                        title="Abrir ou recolher menu">
+                    <i class="bi bi-three-dots-vertical" aria-hidden="true"></i>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        @if (User.Identity?.IsAuthenticated == true)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link @(controllerAtual == "Home" ? "active" : "")"
-                                   asp-controller="Home"
-                                   asp-action="Index">
-                                    Início
-                                </a>
-                            </li>
+            }
+        </div>
 
-                            <li class="nav-item">
-                                <a class="nav-link @(controllerAtual == "Clientes" ? "active" : "")"
-                                   asp-controller="Clientes"
-                                   asp-action="Index">
-                                    Clientes
-                                </a>
-                            </li>
+        <div class="d-flex align-items-center gap-2">
+            <button type="button"
+                    id="botaoTema"
+                    class="btn-tema-minimalista"
+                    aria-label="Alternar entre modo claro e escuro"
+                    title="Alterar tema">
+                <i id="iconeTema"
+                   class="bi bi-moon"
+                   aria-hidden="true"></i>
+            </button>
 
-                            <li class="nav-item">
-                                <a class="nav-link @(controllerAtual == "Veiculos" ? "active" : "")"
-                                   asp-controller="Veiculos"
-                                   asp-action="Index">
-                                    Veículos
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link @(controllerAtual == "OrdemServicoes" ? "active" : "")"
-                                   asp-controller="OrdemServicoes"
-                                   asp-action="Index">
-                                    Ordens de Serviço
-                                </a>
-                            </li>
-                            @if (User.IsInRole("Administrador"))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link
-                                            @(controllerAtual == "Usuarios" ? "active" : "")"
-                                       asp-controller="Usuarios"
-                                       asp-action="Criar">
-                                        Usuários
-                                    </a>
-                                </li>
-
-                                <li class="nav-item">
-                                    <a class="nav-link"
-                                       asp-controller="Configuracoes"
-                                       asp-action="Index">
-                                        Configurações
-                                    </a>
-                                </li>
-                            }
-                        }
-                    </ul>
-                        
-                    <div class="d-flex align-items-center gap-2">
-                        <button type="button"
-                                id="botaoTema"
-                                class="btn btn-tema"
-                                aria-label="Alternar entre modo claro e escuro"
-                                title="Alterar tema">
-                            <span id="iconeTema" aria-hidden="true">☾</span>
-                        </button>
-
-                        <partial name="_LoginPartial" />
-                    </div>
-
-                </div>
-            </div>
-        </nav>
+            <partial name="_LoginPartial" />
+        </div>
     </header>
-    <div class="container page-container">
-        <main role="main" class="py-4">
-            @RenderBody()
-        </main>
+
+    <div class="estrutura-aplicacao">
+        @if (usuarioAutenticado)
+        {
+            <aside id="sidebar"
+                   class="sidebar-ejpro"
+                   aria-label="Menu principal">
+
+                <div class="sidebar-cabecalho">
+                    <div class="sidebar-identidade">
+                        <img src="~/images/logo-ejpro.png"
+                             alt="Logo E&amp;J PRO"
+                             class="sidebar-logo" />
+
+                        <div class="sidebar-identidade-texto">
+                            <strong>E&amp;J PRO</strong>
+                            <small>Gestão de serviços</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-pesquisa">
+                    <i class="bi bi-search" aria-hidden="true"></i>
+
+                    <input type="search"
+                           id="filtroMenu"
+                           placeholder="Filtrar navegação"
+                           aria-label="Filtrar navegação"
+                           autocomplete="off" />
+                </div>
+
+                <nav class="sidebar-menu">
+                    <span class="sidebar-titulo-grupo">
+                        Navegação
+                    </span>
+
+                    <a class="sidebar-link
+                  @(controllerAtual == "Home" ? "active" : "")"
+                       asp-controller="Home"
+                       asp-action="Index"
+                       data-menu="início home dashboard"
+                       title="Início">
+
+                        <span class="sidebar-icone">
+                            <i class="bi bi-grid-1x2-fill"></i>
+                        </span>
+
+                        <span class="sidebar-texto">Início</span>
+
+                        <i class="bi bi-chevron-right sidebar-seta"></i>
+                    </a>
+
+                    <a class="sidebar-link
+                  @(controllerAtual == "Clientes" ? "active" : "")"
+                       asp-controller="Clientes"
+                       asp-action="Index"
+                       data-menu="clientes pessoas cadastro"
+                       title="Clientes">
+
+                        <span class="sidebar-icone">
+                            <i class="bi bi-people-fill"></i>
+                        </span>
+
+                        <span class="sidebar-texto">Clientes</span>
+
+                        <i class="bi bi-chevron-right sidebar-seta"></i>
+                    </a>
+
+                    <a class="sidebar-link
+                  @(controllerAtual == "Veiculos" ? "active" : "")"
+                       asp-controller="Veiculos"
+                       asp-action="Index"
+                       data-menu="veículos carros placas"
+                       title="Veículos">
+
+                        <span class="sidebar-icone">
+                            <i class="bi bi-car-front-fill"></i>
+                        </span>
+
+                        <span class="sidebar-texto">Veículos</span>
+
+                        <i class="bi bi-chevron-right sidebar-seta"></i>
+                    </a>
+
+                    <a class="sidebar-link
+                  @(controllerAtual == "OrdemServicoes" ? "active" : "")"
+                       asp-controller="OrdemServicoes"
+                       asp-action="Index"
+                       data-menu="ordens serviço os atendimento"
+                       title="Ordens de Serviço">
+
+                        <span class="sidebar-icone">
+                            <i class="bi bi-clipboard2-check-fill"></i>
+                        </span>
+
+                        <span class="sidebar-texto">
+                            Ordens de Serviço
+                        </span>
+
+                        <i class="bi bi-chevron-right sidebar-seta"></i>
+                    </a>
+
+                    <a class="sidebar-link"
+                       asp-controller="OrdemServicoes"
+                       asp-action="Create"
+                       data-menu="nova ordem abrir serviço"
+                       title="Nova ordem de serviço">
+
+                        <span class="sidebar-icone">
+                            <i class="bi bi-plus-circle-fill"></i>
+                        </span>
+
+                        <span class="sidebar-texto">
+                            Nova ordem
+                        </span>
+
+                        <i class="bi bi-chevron-right sidebar-seta"></i>
+                    </a>
+
+                    @if (User.IsInRole("Administrador"))
+                    {
+                        <span class="sidebar-titulo-grupo sidebar-grupo-admin">
+                            Administração
+                        </span>
+
+                        <a class="sidebar-link
+                      @(controllerAtual == "Usuarios" ? "active" : "")"
+                           asp-controller="Usuarios"
+                           asp-action="Criar"
+                           data-menu="usuários acessos permissões"
+                           title="Usuários">
+
+                            <span class="sidebar-icone">
+                                <i class="bi bi-person-gear"></i>
+                            </span>
+
+                            <span class="sidebar-texto">Usuários</span>
+
+                            <i class="bi bi-chevron-right sidebar-seta"></i>
+                        </a>
+
+                        <a class="sidebar-link
+                      @(controllerAtual == "Configuracoes" ? "active" : "")"
+                           asp-controller="Configuracoes"
+                           asp-action="Index"
+                           data-menu="configurações oficina pix dados"
+                           title="Configurações">
+
+                            <span class="sidebar-icone">
+                                <i class="bi bi-gear-fill"></i>
+                            </span>
+
+                            <span class="sidebar-texto">
+                                Configurações
+                            </span>
+
+                            <i class="bi bi-chevron-right sidebar-seta"></i>
+                        </a>
+                    }
+                </nav>
+            </aside>
+
+            <button type="button"
+                    id="fundoSidebar"
+                    class="fundo-sidebar"
+                    aria-label="Fechar menu">
+            </button>
+        }
+
+        <div class="conteudo-aplicacao">
+            <div class="container page-container">
+                <main role="main" class="py-4">
+                    @RenderBody()
+                </main>
+            </div>
+
+            <footer class="footer">
+                <div class="container">
+                    &copy; 2026 — E&amp;J PRO Soluções
+                </div>
+            </footer>
+        </div>
     </div>
 
-    <footer class="footer">
-        <div class="container">
-            &copy; 2026 — E&amp;J PRO Soluções
-        </div>
-    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script src="~/js/site.js"
+            asp-append-version="true"></script>
+
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            const botaoTema = document.getElementById("botaoTema");
-            const iconeTema = document.getElementById("iconeTema");
+            const raiz = document.documentElement;
 
-            if (!botaoTema || !iconeTema) {
-                return;
-            }
+            const botaoTema =
+                document.getElementById("botaoTema");
 
-            function atualizarIcone() {
+            const iconeTema =
+                document.getElementById("iconeTema");
+
+            const botaoSidebar =
+                document.getElementById("botaoSidebar");
+
+            const fundoSidebar =
+                document.getElementById("fundoSidebar");
+
+            function atualizarIconeTema() {
+                if (!botaoTema || !iconeTema) {
+                    return;
+                }
+
                 const temaAtual =
-                    document.documentElement.getAttribute("data-bs-theme");
+                    raiz.getAttribute("data-bs-theme");
 
-                iconeTema.textContent = temaAtual === "dark" ? "☀" : "☾";
+                    iconeTema.className =
+                        temaAtual === "dark"
+                            ? "bi bi-sun"
+                            : "bi bi-moon";
+
                 botaoTema.title =
                     temaAtual === "dark"
                         ? "Ativar modo claro"
                         : "Ativar modo escuro";
             }
 
-            botaoTema.addEventListener("click", () => {
+            botaoTema?.addEventListener("click", () => {
                 const temaAtual =
-                    document.documentElement.getAttribute("data-bs-theme");
+                    raiz.getAttribute("data-bs-theme");
 
-                const novoTema = temaAtual === "dark" ? "light" : "dark";
+                const novoTema =
+                    temaAtual === "dark" ? "light" : "dark";
 
-                document.documentElement.setAttribute(
+                raiz.setAttribute(
                     "data-bs-theme",
                     novoTema
                 );
 
-                localStorage.setItem("ejpro-tema", novoTema);
-                atualizarIcone();
+                localStorage.setItem(
+                    "ejpro-tema",
+                    novoTema
+                );
+
+                        const filtroMenu =
+            document.getElementById("filtroMenu");
+
+        const linksMenu =
+            document.querySelectorAll(".sidebar-link");
+
+        filtroMenu?.addEventListener("input", () => {
+            const termo =
+                filtroMenu.value
+                    .trim()
+                    .toLocaleLowerCase("pt-BR");
+
+            linksMenu.forEach(link => {
+                const termosDoItem =
+                    (link.dataset.menu ?? "")
+                        .toLocaleLowerCase("pt-BR");
+
+                const deveAparecer =
+                    termo === "" ||
+                    termosDoItem.includes(termo);
+
+                link.classList.toggle(
+                    "menu-oculto",
+                    !deveAparecer
+                );
+            });
+        });
+
+                atualizarIconeTema();
             });
 
-            atualizarIcone();
+            function fecharSidebarCelular() {
+                raiz.classList.remove(
+                    "sidebar-aberta-celular"
+                );
+            }
+
+            botaoSidebar?.addEventListener("click", () => {
+                const modoCelular =
+                    window.innerWidth < 992;
+
+                if (modoCelular) {
+                    raiz.classList.toggle(
+                        "sidebar-aberta-celular"
+                    );
+
+                    return;
+                }
+
+                raiz.classList.toggle(
+                    "sidebar-recolhida"
+                );
+
+                const estaRecolhida =
+                    raiz.classList.contains(
+                        "sidebar-recolhida"
+                    );
+
+                localStorage.setItem(
+                    "ejpro-sidebar",
+                    estaRecolhida
+                        ? "recolhida"
+                        : "expandida"
+                );
+            });
+
+            fundoSidebar?.addEventListener(
+                "click",
+                fecharSidebarCelular
+            );
+
+            document
+                .querySelectorAll(".sidebar-link")
+                .forEach(link => {
+                    link.addEventListener(
+                        "click",
+                        fecharSidebarCelular
+                    );
+                });
+
+            window.addEventListener("resize", () => {
+                if (window.innerWidth >= 992) {
+                    fecharSidebarCelular();
+                }
+            });
+
+            atualizarIconeTema();
         });
     </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
