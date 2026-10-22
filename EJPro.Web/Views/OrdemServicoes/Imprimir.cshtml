@@ -212,12 +212,103 @@
         }
 
         @@media print {
-            .pix-box
-            ///,.rjwqreatrytdu8
-        {
-            background: white;
-        }
+            body {
+                background: white;
+                font-size: 10px;
+            }
 
+            .acoes {
+                display: none;
+            }
+
+            .documento {
+                width: 100%;
+                min-height: auto;
+                margin: 0;
+                padding: 6mm 8mm;
+                box-shadow: none;
+            }
+
+            .cabecalho {
+                padding-bottom: 6px;
+                margin-bottom: 8px;
+            }
+
+            .logo-impressao {
+                width: 58px;
+                height: 58px;
+            }
+
+            .empresa {
+                gap: 10px;
+            }
+
+                .empresa h1 {
+                    font-size: 19px;
+                    margin-bottom: 2px;
+                }
+
+            .dados-empresa p {
+                margin: 1px 0;
+                font-size: 9px;
+            }
+
+            .numero-os strong {
+                font-size: 17px;
+            }
+
+            .secao {
+                margin-top: 8px;
+                break-inside: avoid;
+            }
+
+                .secao h2 {
+                    margin-bottom: 5px;
+                    padding: 4px 6px;
+                    font-size: 11px;
+                }
+
+            .grade,
+            .pix-grade {
+                gap: 3px 16px;
+            }
+
+            .campo {
+                margin-bottom: 3px;
+            }
+
+                .campo strong {
+                    margin-bottom: 1px;
+                    font-size: 9px;
+                }
+
+            .texto {
+                min-height: 28px;
+                padding: 5px;
+            }
+
+            th,
+            td {
+                padding: 4px 6px;
+            }
+
+            .total {
+                font-size: 13px;
+            }
+
+            .pix-box {
+                padding: 6px;
+                background: white;
+            }
+
+            .pix-chave {
+                font-size: 12px;
+            }
+
+            .assinaturas {
+                gap: 35px;
+                margin-top: 28px;
+            }
         }
 
         @@page {
