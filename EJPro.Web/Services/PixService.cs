@@ -59,7 +59,6 @@ namespace EJPro.Web.Services
 
             var payload =
                 CriarCampo("00", "01") +
-                CriarCampo("01", "11") +
                 CriarCampo("26", dadosContaPix) +
                 CriarCampo("52", "0000") +
                 CriarCampo("53", "986") +
